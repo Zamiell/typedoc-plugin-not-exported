@@ -11,13 +11,17 @@ import {
   TypeScript,
   Application,
   DeclarationReflection,
+  ReflectionKind,
 } from 'typedoc' // version 0.20.16+
+import * as ts from 'typescript'
 import { Context } from 'typedoc/dist/lib/converter/context'
 
 const ModuleFlags =
   TypeScript.SymbolFlags.ValueModule | TypeScript.SymbolFlags.NamespaceModule
 
 exports.load = function (application: Application) {
+  /** @type {Map<Reflection, Set<TypeScript.SourceFile>>} */
+  const checkedForModuleExports = new Map()
   let includeTag = 'notExported'
 
   application.options.addDeclaration({
@@ -39,36 +43,59 @@ exports.load = function (application: Application) {
     lookForFakeExports
   )
 
+  application.converter.on(Converter.EVENT_END, () => {
+    checkedForModuleExports.clear()
+  })
+
   function lookForFakeExports(
     context: Context,
-    _reflection: DeclarationReflection,
-    node: (TypeScript.Node & { symbol?: TypeScript.Symbol }) | undefined
+    reflection: DeclarationReflection
   ) {
-    if (!node) {
-      return
+    // Figure out where "not exports" will be placed, go up the tree until we get to
+    // the module where it belongs.
+    let targetModule = reflection
+    while (
+      !targetModule.kindOf(ReflectionKind.Module | ReflectionKind.Project)
+    ) {
+      targetModule = targetModule.parent as DeclarationReflection
     }
+    const moduleContext = context.withScope(targetModule)
 
-    const moduleSymbol: TypeScript.Symbol | undefined =
-      context.checker.getSymbolAtLocation(node) ?? node.symbol
+    const reflSymbol = context.project.getSymbolFromReflection(reflection)
 
-    if (!moduleSymbol) {
+    if (!reflSymbol) {
       // Global file, no point in doing anything here. TypeDoc will already
       // include everything declared in this file.
       return
     }
 
+    for (const declaration of reflSymbol.declarations || []) {
+      checkFakeExportsOfFile(declaration.getSourceFile(), moduleContext)
+    }
+  }
+
+  function checkFakeExportsOfFile(file: ts.SourceFile, context: Context) {
+    const moduleSymbol = context.checker.getSymbolAtLocation(file)
+
     // Make sure we are allowed to call getExportsOfModule
-    if ((moduleSymbol.flags & ModuleFlags) === 0) {
+    if (!moduleSymbol || (moduleSymbol.flags & ModuleFlags) === 0) {
       return
     }
+
+    const checkedScopes =
+      checkedForModuleExports.get(context.scope) || new Set()
+    checkedForModuleExports.set(context.scope, checkedScopes)
+
+    if (checkedScopes.has(file)) return
+    checkedScopes.add(file)
 
     const exportedSymbols = context.checker.getExportsOfModule(moduleSymbol)
 
     const symbols = context.checker
-      .getSymbolsInScope(node, TypeScript.SymbolFlags.ModuleMember)
+      .getSymbolsInScope(file, TypeScript.SymbolFlags.ModuleMember)
       .filter(
         (symbol) =>
-          isInDocumentableScope(symbol, node) &&
+          symbol.declarations?.some((d) => d.getSourceFile() === file) &&
           !exportedSymbols.includes(symbol)
       )
 
@@ -82,27 +109,4 @@ exports.load = function (application: Application) {
       }
     }
   }
-}
-
-function isInDocumentableScope(
-  symbol: TypeScript.Symbol,
-  node: TypeScript.Node
-) {
-  for (const decl of symbol.getDeclarations() || []) {
-    // Case 1: Included in this namespace/source file
-    if (decl.parent === node) return true
-
-    // Case 2: Within `declare global {}`
-    // We need to check isSourceFile here as well because otherwise it will be picked up
-    // in the scope of namespaces while we should be picking it up only in the first case
-    if (
-      TypeScript.isSourceFile(node) &&
-      TypeScript.isModuleBlock(decl.parent) &&
-      decl.parent.parent.name.getText() === 'global'
-    ) {
-      return true
-    }
-  }
-
-  return false
 }
