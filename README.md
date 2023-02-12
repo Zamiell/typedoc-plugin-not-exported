@@ -1,8 +1,8 @@
 # typedoc-plugin-not-exported
 
-[![npm package](https://img.shields.io/badge/npm%20i%20--D-typedoc--plugin--not--exported-brightgreen)](https://www.npmjs.com/package/typedoc-plugin-not-exported) [![version number](https://img.shields.io/npm/v/typedoc-plugin-not-exported?color=green&label=version)](https://github.com/tomchen/typedoc-plugin-not-exported/releases) [![Actions Status](https://github.com/tomchen/typedoc-plugin-not-exported/workflows/Test/badge.svg)](https://github.com/tomchen/typedoc-plugin-not-exported/actions) [![License](https://img.shields.io/github/license/tomchen/typedoc-plugin-not-exported)](https://github.com/tomchen/typedoc-plugin-not-exported/blob/main/LICENSE)
-
 This [TypeDoc](https://typedoc.org/) plugin can force inclusion of specific symbols (variables) that are not exported, by making them fake exports.
+
+This is a fork of [typedoc-plugin-not-exported](https://github.com/tomchen/typedoc-plugin-not-exported), which is updated to work with the latest version of TypeDoc.
 
 ## Usage
 
@@ -11,13 +11,13 @@ This [TypeDoc](https://typedoc.org/) plugin can force inclusion of specific symb
 Install the plugin with [npm](https://www.npmjs.com/):
 
 ```bash
-npm i -D typedoc-plugin-not-exported
+npm install --save-dev @zamiell/typedoc-plugin-not-exported
 ```
 
 Or with [yarn](https://yarnpkg.com/):
 
 ```bash
-yarn add -D typedoc-plugin-not-exported
+yarn add --dev @zamiell/typedoc-plugin-not-exported
 ```
 
 In your code, tag the symbols (i.e. variables / types / interfaces / classes / object properties / class members etc.) that are not exported but you still want to include in the generated documentation.
