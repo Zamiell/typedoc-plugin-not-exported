@@ -1,6 +1,6 @@
 {
   "name": "@zamiell/typedoc-plugin-not-exported",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "TypeDoc plugin that forces inclusion of non-exported symbols (variables)",
   "main": "dist/main.js",
   "scripts": {
@@ -9,7 +9,7 @@
     "test:cleanup": "rimraf test/docs test/docs2",
     "test:gen": "npm run test:cleanup && typedoc --options test/typedoc.json && typedoc --options test/typedoc2.json",
     "test:jest": "jest --no-cache --runInBand",
-    "addscope": "node tools/packagejson name @tomchen/typedoc-plugin-not-exported"
+    "addscope": "node tools/packagejson name @zamiell/typedoc-plugin-not-exported"
   },
   "publishConfig": {
     "access": "public"
@@ -27,15 +27,15 @@
     "export",
     "include"
   ],
-  "author": "Tom Chen <tomchen.org@gmail.com>",
+  "author": "Zamiell",
   "license": "CC0-1.0",
-  "homepage": "https://github.com/tomchen/typedoc-plugin-not-exported",
+  "homepage": "https://github.com/Zamiell/typedoc-plugin-not-exported",
   "repository": {
     "type": "git",
-    "url": "git@github.com:tomchen/typedoc-plugin-not-exported.git"
+    "url": "git@github.com:Zamiell/typedoc-plugin-not-exported.git"
   },
   "bugs": {
-    "url": "https://github.com/tomchen/typedoc-plugin-not-exported/issues"
+    "url": "https://github.com/Zamiell/typedoc-plugin-not-exported/issues"
   },
   "peerDependencies": {
     "typedoc": ">=0.22.17"

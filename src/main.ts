@@ -2,7 +2,7 @@
  * typedoc-plugin-not-exported
  * TypeDoc plugin that forces inclusion of non-exported symbols (variables)
  * Originally from https://github.com/TypeStrong/typedoc/issues/1474#issuecomment-766178261
- * https://github.com/tomchen/typedoc-plugin-not-exported
+ * And: https://github.com/tomchen/typedoc-plugin-not-exported
  * CC0
  */
 

@@ -2,7 +2,7 @@
 
 This [TypeDoc](https://typedoc.org/) plugin can force inclusion of specific symbols (variables) that are not exported, by making them fake exports.
 
-This is a fork of [typedoc-plugin-not-exported](https://github.com/tomchen/typedoc-plugin-not-exported), which is updated to work with the latest version of TypeDoc.
+This is a fork of [typedoc-plugin-not-exported](https://github.com/Zamiell/typedoc-plugin-not-exported), which is updated to work with the latest version of TypeDoc.
 
 ## Usage
 

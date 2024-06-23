@@ -45,7 +45,7 @@ jobs:
         with:
           node-version: '12.x'
           registry-url: 'https://npm.pkg.github.com'
-          scope: '@tomchen'
+          scope: '@zamiell'
       - run: npm run addscope
       - name: Publish to GitHub Packages
         run: npm publish
