@@ -91,10 +91,10 @@ exports.load = function (application: Application) {
 
     const exportedSymbols = context.checker.getExportsOfModule(moduleSymbol)
 
-    const symbols = context.checker
+    const symbols: ts.Symbol[] = context.checker
       .getSymbolsInScope(file, TypeScript.SymbolFlags.ModuleMember)
       .filter(
-        (symbol) =>
+        (symbol: ts.Symbol) =>
           symbol.declarations?.some((d) => d.getSourceFile() === file) &&
           !exportedSymbols.includes(symbol)
       )
@@ -103,10 +103,24 @@ exports.load = function (application: Application) {
       if (
         symbol
           .getJsDocTags()
-          .some((tag) => tag.name.toLocaleLowerCase() === includeTag)
+          .some(
+            (tag: ts.JSDocTagInfo) =>
+              tag.name.toLocaleLowerCase() === includeTag
+          )
       ) {
         context.converter.convertSymbol(context, symbol)
       }
     }
   }
+
+  // Fix for the new TypeDoc JSDoc tag linting.
+  application.on(Application.EVENT_BOOTSTRAP_END, () => {
+    const modifiers = application.options.getValue('modifierTags')
+    if (!modifiers.includes('@notExported')) {
+      application.options.setValue('modifierTags', [
+        ...modifiers,
+        '@notExported',
+      ])
+    }
+  })
 }
