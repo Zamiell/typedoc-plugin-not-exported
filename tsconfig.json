@@ -6,7 +6,9 @@
     "outDir": "./dist/",
     "strict": true,
     "moduleResolution": "node",
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
   },
-  "include": ["src/**/*"]
+
+  "include": ["./src/**/*.ts"],
 }
