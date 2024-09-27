@@ -38,7 +38,7 @@
     "url": "https://github.com/Zamiell/typedoc-plugin-not-exported/issues"
   },
   "peerDependencies": {
-    "typedoc": ">=0.26.2"
+    "typedoc": ">= 0.26.2"
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",

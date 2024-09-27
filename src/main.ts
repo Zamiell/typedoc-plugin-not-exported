@@ -12,7 +12,7 @@ import {
   Application,
   DeclarationReflection,
   ReflectionKind,
-} from 'typedoc' // version 0.20.16+
+} from 'typedoc'
 import * as ts from 'typescript'
 import { Context } from 'typedoc/dist/lib/converter/context'
 
@@ -26,8 +26,7 @@ exports.load = function (application: Application) {
 
   application.options.addDeclaration({
     name: 'includeTag',
-    help:
-      '[typedoc-plugin-not-exported] Specify the tag name for non-exported member to be imported under',
+    help: '[typedoc-plugin-not-exported] Specify the tag name for non-exported member to be imported under',
     defaultValue: includeTag,
   })
 
