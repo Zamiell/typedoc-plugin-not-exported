@@ -33,7 +33,7 @@
   "homepage": "https://github.com/Zamiell/typedoc-plugin-not-exported",
   "repository": {
     "type": "git",
-    "url": "git@github.com:Zamiell/typedoc-plugin-not-exported.git"
+    "url": "git+https://github.com/Zamiell/typedoc-plugin-not-exported.git"
   },
   "bugs": {
     "url": "https://github.com/Zamiell/typedoc-plugin-not-exported/issues"
