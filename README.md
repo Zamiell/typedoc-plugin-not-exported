@@ -6,18 +6,12 @@ This is a fork of [typedoc-plugin-not-exported](https://github.com/Zamiell/typed
 
 ## Usage
 
-(Assuming you have already installed TypeDoc (`npm i -D typedoc`) of [version](https://www.npmjs.com/package/typedoc?activeTab=versions) **equal to or greater than v0.20.16** (released on 2021-01-17, this is the minimum required by this plugin. If you need to update the version, change TypeDoc's version number in package.json and rerun `npm i` / `yarn`))
+(Assuming you have already installed TypeDoc (`npm i -D typedoc`) at a [version](https://www.npmjs.com/package/typedoc?activeTab=versions) matching `^0.28.0`, which is required by this plugin.)
 
 Install the plugin with [npm](https://www.npmjs.com/):
 
 ```bash
 npm install --save-dev @zamiell/typedoc-plugin-not-exported
-```
-
-Or with [yarn](https://yarnpkg.com/):
-
-```bash
-yarn add --dev @zamiell/typedoc-plugin-not-exported
 ```
 
 In your code, tag the symbols (i.e. variables / types / interfaces / classes / object properties / class members etc.) that are not exported but you still want to include in the generated documentation.

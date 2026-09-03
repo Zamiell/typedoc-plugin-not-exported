@@ -1,0 +1,8 @@
+{
+  "entryPoints": ["index.ts"],
+  "tsconfig": "../../tsconfig.json",
+  "readme": "none",
+  "plugin": ["../../../dist/main.js"],
+  "includeTag": "internalDoNotUse",
+  "json": "output.json"
+}

@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "ES2022",
     "module": "commonjs",
-    "lib": ["ES2017"],
+    "lib": ["ES2022"],
     "outDir": "./dist/",
+    "rootDir": "./src",
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true
   },
 
-  "include": ["./src/**/*.ts"],
+  "include": ["./src/**/*.ts"]
 }

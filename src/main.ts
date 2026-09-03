@@ -7,21 +7,30 @@
  */
 
 import {
-  Converter,
-  TypeScript,
   Application,
+  Context,
+  Converter,
   DeclarationReflection,
   ReflectionKind,
+  TypeScript,
 } from 'typedoc'
-import * as ts from 'typescript'
-import { Context } from 'typedoc/dist/lib/converter/context'
+import type * as ts from 'typescript'
 
 const ModuleFlags =
   TypeScript.SymbolFlags.ValueModule | TypeScript.SymbolFlags.NamespaceModule
 
-exports.load = function (application: Application) {
-  /** @type {Map<Reflection, Set<TypeScript.SourceFile>>} */
-  const checkedForModuleExports = new Map()
+export function load(application: Application): void {
+  // Fail clearly instead of silently doing nothing if a future TypeDoc
+  // release removes the converter API this plugin depends on.
+  if (typeof Context.prototype.getSymbolFromReflection !== 'function') {
+    throw new Error(
+      '[typedoc-plugin-not-exported] The installed version of TypeDoc no ' +
+        'longer exposes `Context.prototype.getSymbolFromReflection`. This ' +
+        'plugin requires TypeDoc ^0.28.0; check for a plugin update.'
+    )
+  }
+
+  const checkedForModuleExports = new Map<unknown, Set<ts.SourceFile>>()
   let includeTag = 'notExported'
 
   application.options.addDeclaration({
@@ -50,17 +59,20 @@ exports.load = function (application: Application) {
     context: Context,
     reflection: DeclarationReflection
   ) {
-    // Figure out where "not exports" will be placed, go up the tree until we get to
-    // the module where it belongs.
-    let targetModule = reflection
-    while (
-      !targetModule.kindOf(ReflectionKind.Module | ReflectionKind.Project)
-    ) {
-      targetModule = targetModule.parent as DeclarationReflection
+    // TypeDoc 0.28 only allows `context.withScope()` to move to the current
+    // scope or to an immediate child, so we can no longer walk up from
+    // `reflection` to its owning module/project and manufacture a context for
+    // that ancestor. Instead, rely on the fact that every declaration
+    // directly inside a module or project (including a namespace's own
+    // declaration) fires this event with `context.scope` already set to that
+    // owning module/project. Skip every other, more deeply nested event; the
+    // file will already get processed by one of its module-level siblings
+    // (or by the namespace/module declaration itself).
+    if (!context.scope.kindOf(ReflectionKind.Module | ReflectionKind.Project)) {
+      return
     }
-    const moduleContext = context.withScope(targetModule)
 
-    const reflSymbol = context.project.getSymbolFromReflection(reflection)
+    const reflSymbol = context.getSymbolFromReflection(reflection)
 
     if (!reflSymbol) {
       // Global file, no point in doing anything here. TypeDoc will already
@@ -69,7 +81,7 @@ exports.load = function (application: Application) {
     }
 
     for (const declaration of reflSymbol.declarations || []) {
-      checkFakeExportsOfFile(declaration.getSourceFile(), moduleContext)
+      checkFakeExportsOfFile(declaration.getSourceFile(), context)
     }
   }
 
@@ -112,14 +124,22 @@ exports.load = function (application: Application) {
     }
   }
 
-  // Fix for the new TypeDoc JSDoc tag linting.
+  // Fix for the new TypeDoc JSDoc tag linting. Register whatever tag is
+  // actually configured (the default `@notExported`, or a custom
+  // `--includeTag` value), not just the default, so that custom tags are
+  // also stripped from the rendered comment instead of failing lint checks.
   application.on(Application.EVENT_BOOTSTRAP_END, () => {
+    const configuredIncludeTag = application.options.getValue('includeTag')
+    const tagName =
+      typeof configuredIncludeTag === 'string' &&
+      configuredIncludeTag.length > 0
+        ? configuredIncludeTag
+        : 'notExported'
+    const modifierTag: `@${string}` = `@${tagName}`
+
     const modifiers = application.options.getValue('modifierTags')
-    if (!modifiers.includes('@notExported')) {
-      application.options.setValue('modifierTags', [
-        ...modifiers,
-        '@notExported',
-      ])
+    if (!modifiers.includes(modifierTag)) {
+      application.options.setValue('modifierTags', [...modifiers, modifierTag])
     }
   })
 }

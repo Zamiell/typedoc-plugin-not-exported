@@ -1,5 +1,4 @@
-test/docs
-test/docs2
+test/fixtures/*/output.json
 
 # Logs
 logs
